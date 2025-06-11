@@ -1,9 +1,9 @@
 export type CreateAccountData = {
   name: string;
-  location: string;
-  contact_email: string;
-  contact_phone: string;
-  contact_address: string;
+  location?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  contact_address?: string;
 };
 
 export type CreateAccountFormProps = {

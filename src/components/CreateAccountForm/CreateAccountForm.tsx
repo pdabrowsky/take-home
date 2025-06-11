@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { createAccountSchema } from "@/lib/validations";
-import {
-  CreateAccountFormProps,
-  CreateAccountData,
-} from "./CreateAccountForm.types";
+import { CreateAccountFormProps } from "./CreateAccountForm.types";
 
-const initialFormData: CreateAccountData = {
+const initialFormData = {
   name: "",
   location: "",
   contact_email: "",
@@ -19,7 +16,7 @@ export const CreateAccountForm = ({
   onCancel,
   isLoading,
 }: CreateAccountFormProps) => {
-  const [formData, setFormData] = useState<CreateAccountData>(initialFormData);
+  const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (
@@ -37,7 +34,15 @@ export const CreateAccountForm = ({
     e.preventDefault();
     setErrors({});
 
-    const result = createAccountSchema.safeParse(formData);
+    const dataToValidate = {
+      name: formData.name,
+      location: formData.location || undefined,
+      contact_email: formData.contact_email || undefined,
+      contact_phone: formData.contact_phone || undefined,
+      contact_address: formData.contact_address || undefined,
+    };
+
+    const result = createAccountSchema.safeParse(dataToValidate);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((error) => {

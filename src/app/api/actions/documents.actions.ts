@@ -9,6 +9,7 @@ import {
   getDocumentById,
 } from "../services/documents.services";
 import { revalidatePath } from "next/cache";
+import { createClient } from "@/utils/supabase/server";
 
 export async function createDocumentAction(documentData: {
   account_id: string;
@@ -136,6 +137,26 @@ export async function deleteDocumentAction(documentId: string) {
       throw new Error("Unauthorized");
     }
 
+    const documentData = await getDocumentById(user.id, documentId);
+
+    if (documentData.file_path) {
+      const supabase = await createClient();
+
+      const urlParts = documentData.file_path.split("/");
+      const fileName = urlParts.slice(-3).join("/");
+
+      const { error: storageError } = await supabase.storage
+        .from("documents")
+        .remove([fileName]);
+
+      if (storageError) {
+        console.warn(
+          "Failed to delete file from storage:",
+          storageError.message
+        );
+      }
+    }
+
     await deleteDocument(user.id, documentId);
 
     revalidatePath("/dashboard");
@@ -181,6 +202,64 @@ export async function getDocumentAction(documentId: string) {
       return { success: false, error: "Document not found" };
     }
 
+    return { success: false, error: errorMessage };
+  }
+}
+
+export async function uploadDocumentAction(formData: FormData) {
+  try {
+    const {
+      data: { user },
+      error,
+    } = await auth.getServerUser();
+
+    if (error || !user) {
+      throw new Error("Unauthorized");
+    }
+
+    const file = formData.get("file") as File;
+    const accountId = formData.get("account_id") as string;
+    const description = formData.get("description") as string;
+
+    if (!file || !accountId) {
+      throw new Error("File and account ID are required");
+    }
+
+    if (file.type !== "application/pdf") {
+      throw new Error("Only PDF files are allowed");
+    }
+
+    const supabase = await createClient();
+
+    const fileName = `${user.id}/${accountId}/${Date.now()}_${file.name}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      throw new Error(`Failed to upload file: ${uploadError.message}`);
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("documents")
+      .getPublicUrl(fileName);
+
+    const newDocument = await createDocument(user.id, {
+      account_id: accountId,
+      name: file.name,
+      description: description || null,
+      file_path: urlData.publicUrl,
+      file_size: file.size,
+      file_type: file.type,
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, data: newDocument };
+  } catch (error) {
+    console.error("Error uploading document:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to upload document";
     return { success: false, error: errorMessage };
   }
 }

@@ -1,18 +1,68 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/Button";
+import { Modal } from "@/components/Modal";
+import { FileUpload } from "@/components/FileUpload";
+import { DocumentsList } from "@/components/DocumentsList";
 import { AccountCardProps } from "./AccountCard.types";
+import { deleteDocumentAction } from "@/app/api/actions/documents.actions";
+import { Document } from "@/types/database";
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "N/A";
-  return new Date(dateString).toLocaleDateString();
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 };
 
 export const AccountCard = ({
   account,
   onDelete,
   isDeleting,
+  onDocumentUpdate,
 }: AccountCardProps) => {
+  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+  const [localDocuments, setLocalDocuments] = useState<Document[]>(
+    account.documents
+  );
+  const [isDeletingDocument, setIsDeletingDocument] = useState(false);
+
   const handleDelete = () => {
     onDelete(account.id);
+  };
+
+  const handleUploadSuccess = (newDocument: Document) => {
+    const updatedDocuments = [...localDocuments, newDocument];
+    setLocalDocuments(updatedDocuments);
+    onDocumentUpdate?.(account.id, updatedDocuments);
+  };
+
+  const handleUploadError = (error: string) => {
+    alert(`Upload failed: ${error}`);
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    setIsDeletingDocument(true);
+    try {
+      const result = await deleteDocumentAction(documentId);
+      if (result.success) {
+        const updatedDocuments = localDocuments.filter(
+          (doc) => doc.id !== documentId
+        );
+        setLocalDocuments(updatedDocuments);
+        onDocumentUpdate?.(account.id, updatedDocuments);
+      } else {
+        alert(`Failed to delete document: ${result.error}`);
+      }
+    } catch (error) {
+      console.error("Failed to delete document:", error);
+      alert("Failed to delete document. Please try again.");
+    } finally {
+      setIsDeletingDocument(false);
+    }
   };
 
   return (
@@ -73,25 +123,38 @@ export const AccountCard = ({
       <div className="border-t pt-4">
         <div className="flex justify-between items-center mb-2">
           <h4 className="text-sm font-medium text-gray-900">Documents</h4>
-          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-            {account.documents.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+              {localDocuments.length}
+            </span>
+            <Button
+              onClick={() => setIsDocumentsModalOpen(true)}
+              size="sm"
+              variant="secondary"
+            >
+              Manage
+            </Button>
+          </div>
         </div>
 
-        {account.documents.length > 0 ? (
+        {localDocuments.length > 0 ? (
           <div className="space-y-1">
-            {account.documents.slice(0, 3).map((doc) => (
+            {localDocuments.slice(0, 3).map((doc) => (
               <div
                 key={doc.id}
-                className="text-sm text-gray-600 truncate flex items-center"
+                className="text-sm text-gray-600 truncate flex items-center cursor-pointer hover:text-blue-600"
+                onClick={() => setIsDocumentsModalOpen(true)}
               >
                 <span className="w-1 h-1 bg-gray-400 rounded-full mr-2 flex-shrink-0"></span>
                 {doc.name}
               </div>
             ))}
-            {account.documents.length > 3 && (
-              <div className="text-sm text-gray-500 pl-3">
-                +{account.documents.length - 3} more...
+            {localDocuments.length > 3 && (
+              <div
+                className="text-sm text-gray-500 pl-3 cursor-pointer hover:text-blue-600"
+                onClick={() => setIsDocumentsModalOpen(true)}
+              >
+                +{localDocuments.length - 3} more...
               </div>
             )}
           </div>
@@ -105,6 +168,33 @@ export const AccountCard = ({
           Created: {formatDate(account.created_at)}
         </p>
       </div>
+
+      <Modal
+        isOpen={isDocumentsModalOpen}
+        onClose={() => setIsDocumentsModalOpen(false)}
+        title={`Documents for ${account.name}`}
+        size="xl"
+      >
+        <div className="space-y-6">
+          <div>
+            <h4 className="text-lg font-medium mb-3">Upload New Document</h4>
+            <FileUpload
+              accountId={account.id}
+              onUploadSuccess={handleUploadSuccess}
+              onUploadError={handleUploadError}
+            />
+          </div>
+
+          <div>
+            <h4 className="text-lg font-medium mb-3">Existing Documents</h4>
+            <DocumentsList
+              documents={localDocuments}
+              onDeleteDocument={handleDeleteDocument}
+              isDeleting={isDeletingDocument}
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -13,8 +13,9 @@ import {
   createAccountAction,
   deleteAccountAction,
 } from "@/app/api/actions/accounts.actions";
+import { Document } from "@/types/database";
 
-export function AccountsList({ initialAccounts }: AccountsListProps) {
+export const AccountsList = ({ initialAccounts }: AccountsListProps) => {
   const [accounts, setAccounts] =
     useState<AccountWithDocuments[]>(initialAccounts);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -74,6 +75,14 @@ export function AccountsList({ initialAccounts }: AccountsListProps) {
     });
   };
 
+  const handleDocumentUpdate = (accountId: string, documents: Document[]) => {
+    setAccounts(
+      accounts.map((account) =>
+        account.id === accountId ? { ...account, documents } : account
+      )
+    );
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -116,6 +125,7 @@ export function AccountsList({ initialAccounts }: AccountsListProps) {
               account={account}
               onDelete={handleDeleteAccount}
               isDeleting={isPending}
+              onDocumentUpdate={handleDocumentUpdate}
             />
           ))}
         </div>
@@ -135,4 +145,4 @@ export function AccountsList({ initialAccounts }: AccountsListProps) {
       </Modal>
     </div>
   );
-}
+};
