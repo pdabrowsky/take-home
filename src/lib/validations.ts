@@ -15,3 +15,32 @@ export const signupSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+export const createAccountSchema = z.object({
+  name: z.string().min(1, "Name is required").trim(),
+  location: z.string().optional(),
+  contact_email: z
+    .string()
+    .optional()
+    .refine(
+      (email) => !email || z.string().email().safeParse(email).success,
+      "Please enter a valid email address"
+    ),
+  contact_phone: z.string().optional(),
+  contact_address: z.string().optional(),
+});
+
+export const updateAccountSchema = createAccountSchema.partial();
+
+export const createDocumentSchema = z.object({
+  account_id: z.string().min(1, "Account ID is required"),
+  name: z.string().min(1, "Name is required").trim(),
+  description: z.string().optional(),
+  file_path: z.string().optional(),
+  file_size: z.number().positive("File size must be positive").optional(),
+  file_type: z.string().optional(),
+});
+
+export const updateDocumentSchema = createDocumentSchema
+  .omit({ account_id: true })
+  .partial();
