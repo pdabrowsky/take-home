@@ -44,3 +44,19 @@ export const createDocumentSchema = z.object({
 export const updateDocumentSchema = createDocumentSchema
   .omit({ account_id: true })
   .partial();
+
+export const fileUploadSchema = z.object({
+  file: z
+    .instanceof(File)
+    .refine((file) => file.type === "application/pdf", {
+      message: "Only PDF files are allowed",
+    })
+    .refine((file) => file.size <= 10 * 1024 * 1024, {
+      message: "File size must be less than 10MB",
+    })
+    .refine((file) => file.name.length > 0, {
+      message: "File name cannot be empty",
+    }),
+  account_id: z.string().min(1, "Account ID is required"),
+  description: z.string().optional().or(z.literal(undefined)),
+});

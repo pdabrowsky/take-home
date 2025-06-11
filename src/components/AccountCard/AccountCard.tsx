@@ -29,6 +29,8 @@ export const AccountCard = ({
     account.documents
   );
   const [isDeletingDocument, setIsDeletingDocument] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleDelete = () => {
     onDelete(account.id);
@@ -38,14 +40,16 @@ export const AccountCard = ({
     const updatedDocuments = [...localDocuments, newDocument];
     setLocalDocuments(updatedDocuments);
     onDocumentUpdate?.(account.id, updatedDocuments);
+    setUploadError(null);
   };
 
   const handleUploadError = (error: string) => {
-    alert(`Upload failed: ${error}`);
+    setUploadError(error);
   };
 
   const handleDeleteDocument = async (documentId: string) => {
     setIsDeletingDocument(true);
+    setDeleteError(null);
     try {
       const result = await deleteDocumentAction(documentId);
       if (result.success) {
@@ -55,11 +59,11 @@ export const AccountCard = ({
         setLocalDocuments(updatedDocuments);
         onDocumentUpdate?.(account.id, updatedDocuments);
       } else {
-        alert(`Failed to delete document: ${result.error}`);
+        setDeleteError(result.error || "Failed to delete document");
       }
     } catch (error) {
       console.error("Failed to delete document:", error);
-      alert("Failed to delete document. Please try again.");
+      setDeleteError("Failed to delete document. Please try again.");
     } finally {
       setIsDeletingDocument(false);
     }
@@ -171,7 +175,11 @@ export const AccountCard = ({
 
       <Modal
         isOpen={isDocumentsModalOpen}
-        onClose={() => setIsDocumentsModalOpen(false)}
+        onClose={() => {
+          setIsDocumentsModalOpen(false);
+          setUploadError(null);
+          setDeleteError(null);
+        }}
         title={`Documents for ${account.name}`}
         size="xl"
       >
@@ -183,6 +191,13 @@ export const AccountCard = ({
               onUploadSuccess={handleUploadSuccess}
               onUploadError={handleUploadError}
             />
+            {uploadError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 whitespace-pre-line">
+                  {uploadError}
+                </p>
+              </div>
+            )}
           </div>
 
           <div>
@@ -192,6 +207,11 @@ export const AccountCard = ({
               onDeleteDocument={handleDeleteDocument}
               isDeleting={isDeletingDocument}
             />
+            {deleteError && (
+              <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{deleteError}</p>
+              </div>
+            )}
           </div>
         </div>
       </Modal>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useTransition } from "react";
 import { uploadDocumentAction } from "@/app/api/actions/documents.actions";
+import { fileUploadSchema } from "@/lib/validations";
 import { Icon } from "@/components/Icon";
 import { FileUploadProps } from "./FileUpload.types";
 
@@ -13,6 +14,22 @@ export const FileUpload = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const validateFile = (file: File): string | null => {
+    const result = fileUploadSchema.safeParse({
+      file,
+      account_id: accountId,
+    });
+
+    if (!result.success) {
+      const errorMessages = result.error.errors
+        .map((err) => err.message)
+        .join(", ");
+      return errorMessages;
+    }
+
+    return null;
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -29,26 +46,62 @@ export const FileUpload = ({
     setIsDragOver(false);
 
     const files = Array.from(e.dataTransfer.files);
-    const pdfFiles = files.filter((file) => file.type === "application/pdf");
 
-    if (pdfFiles.length === 0) {
-      onUploadError("Please upload only PDF files");
+    if (files.length === 0) {
+      onUploadError("No files selected");
       return;
     }
 
-    pdfFiles.forEach((file) => uploadFile(file));
+    // Validate all files first
+    const validationErrors: string[] = [];
+    const validFiles: File[] = [];
+
+    files.forEach((file) => {
+      const validationError = validateFile(file);
+      if (validationError) {
+        validationErrors.push(`${file.name}: ${validationError}`);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (validationErrors.length > 0) {
+      onUploadError(validationErrors.join("\n"));
+      return;
+    }
+
+    // Upload all valid files
+    validFiles.forEach((file) => uploadFile(file));
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const pdfFiles = files.filter((file) => file.type === "application/pdf");
 
-    if (pdfFiles.length === 0) {
-      onUploadError("Please upload only PDF files");
+    if (files.length === 0) {
+      onUploadError("No files selected");
       return;
     }
 
-    pdfFiles.forEach((file) => uploadFile(file));
+    // Validate all files first
+    const validationErrors: string[] = [];
+    const validFiles: File[] = [];
+
+    files.forEach((file) => {
+      const validationError = validateFile(file);
+      if (validationError) {
+        validationErrors.push(`${file.name}: ${validationError}`);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (validationErrors.length > 0) {
+      onUploadError(validationErrors.join("\n"));
+      return;
+    }
+
+    // Upload all valid files
+    validFiles.forEach((file) => uploadFile(file));
   };
 
   const uploadFile = (file: File) => {
@@ -95,7 +148,6 @@ export const FileUpload = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf"
         multiple
         onChange={handleFileSelect}
         className="hidden"
@@ -114,7 +166,7 @@ export const FileUpload = ({
               <span className="font-medium">Click to upload</span> or drag and
               drop
             </p>
-            <p className="text-sm text-gray-500">PDF files only</p>
+            <p className="text-sm text-gray-500">PDF files only (max 10MB)</p>
           </>
         )}
       </div>

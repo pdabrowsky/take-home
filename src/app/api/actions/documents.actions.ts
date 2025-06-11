@@ -1,7 +1,11 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { createDocumentSchema, updateDocumentSchema } from "@/lib/validations";
+import {
+  createDocumentSchema,
+  updateDocumentSchema,
+  fileUploadSchema,
+} from "@/lib/validations";
 import {
   createDocument,
   updateDocument,
@@ -219,14 +223,19 @@ export async function uploadDocumentAction(formData: FormData) {
 
     const file = formData.get("file") as File;
     const accountId = formData.get("account_id") as string;
-    const description = formData.get("description") as string;
+    const description = formData.get("description") as string | null;
 
-    if (!file || !accountId) {
-      throw new Error("File and account ID are required");
-    }
+    const validationResult = fileUploadSchema.safeParse({
+      file,
+      account_id: accountId,
+      description: description || undefined,
+    });
 
-    if (file.type !== "application/pdf") {
-      throw new Error("Only PDF files are allowed");
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors
+        .map((err) => err.message)
+        .join(", ");
+      throw new Error(`Validation failed: ${errorMessages}`);
     }
 
     const supabase = await createClient();
