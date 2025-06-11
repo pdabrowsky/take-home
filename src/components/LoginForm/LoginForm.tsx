@@ -102,126 +102,132 @@ export const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {authMode === "login"
-              ? "Sign in to your account"
-              : "Create your account"}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {authMode === "login"
-              ? "Don't have an account? "
-              : "Already have an account? "}
-            <Button
-              type="button"
-              onClick={handleToggleMode}
-              disabled={loading}
-              variant="ghost"
-              size="sm"
-              className="font-medium text-indigo-600 hover:text-indigo-500 p-0 h-auto"
-            >
-              {authMode === "login" ? "Sign up" : "Sign in"}
-            </Button>
-          </p>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {errors.general && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-sm text-red-600">{errors.general}</p>
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="text"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={loading}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Enter your email"
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete={
-                  authMode === "login" ? "current-password" : "new-password"
-                }
-                value={formData.password}
-                onChange={handleChange}
-                disabled={loading}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Enter your password"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
-            </div>
-
-            {authMode === "signup" && (
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="Confirm your password"
-                />
-                {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-            )}
+      <div className="max-w-md w-full">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900">
+              {authMode === "login"
+                ? "Sign in to your account"
+                : "Create your account"}
+            </h2>
+            <p className="mt-3 text-gray-600">
+              {authMode === "login"
+                ? "Please sign in to access your dashboard"
+                : "Join us today and get started"}
+            </p>
           </div>
 
-          <div>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {errors.general && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-600">{errors.general}</p>
+              </div>
+            )}
+
+            <div className="space-y-5">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="text"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 placeholder-gray-500"
+                  placeholder="Enter your email"
+                />
+                {errors.email && (
+                  <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete={
+                    authMode === "login" ? "current-password" : "new-password"
+                  }
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 placeholder-gray-500"
+                  placeholder="Enter your password"
+                />
+                {errors.password && (
+                  <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+                )}
+              </div>
+
+              {authMode === "signup" && (
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 placeholder-gray-500"
+                    placeholder="Confirm your password"
+                  />
+                  {errors.confirmPassword && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <Button
               type="submit"
               disabled={loading}
               loading={loading}
               fullWidth
-              className="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+              className="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
               {authMode === "login" ? "Sign in" : "Create account"}
             </Button>
+          </form>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              {authMode === "login"
+                ? "Don't have an account? "
+                : "Already have an account? "}
+              <button
+                type="button"
+                onClick={handleToggleMode}
+                disabled={loading}
+                className="font-medium text-indigo-600 hover:text-indigo-500 underline transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {authMode === "login" ? "Sign Up" : "Sign In"}
+              </button>
+            </p>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

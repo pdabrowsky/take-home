@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ModalProps } from "./Modal.types";
+import { Icon } from "@/components/Icon";
 
 const sizeStyles = {
   sm: "max-w-sm",
@@ -62,19 +63,7 @@ export const Modal = ({
                 className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
                 aria-label="Close modal"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <Icon name="x-mark" size={20} />
               </button>
             )}
           </div>

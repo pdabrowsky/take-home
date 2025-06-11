@@ -1,6 +1,7 @@
 "use client";
 
 import { PdfViewerProps } from "./PdfViewer.types";
+import { Icon } from "@/components/Icon";
 
 export const PdfViewer = ({ document, onClose }: PdfViewerProps) => {
   if (!document.file_path) {
@@ -36,19 +37,7 @@ export const PdfViewer = ({ document, onClose }: PdfViewerProps) => {
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 cursor-pointer"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <Icon name="x-mark" size={24} />
           </button>
         </div>
 
