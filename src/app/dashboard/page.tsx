@@ -2,6 +2,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { ClientNavbar } from "@/components/ClientNavbar";
 import { auth } from "@/lib/auth";
 import { AccountsList, AccountWithDocuments } from "@/components/AccountsList";
+import { WorkflowSection } from "@/components/WorkflowSection";
 import { getAccountsAction } from "@/app/api/actions/accounts.actions";
 
 async function getAccountsServerSide(): Promise<AccountWithDocuments[]> {
@@ -42,7 +43,16 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            <AccountsList initialAccounts={accounts} />
+            <div className="grid gap-8">
+              <AccountsList initialAccounts={accounts} />
+
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  Workflow Execution
+                </h2>
+                <WorkflowSection accounts={accounts} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -49,8 +49,7 @@ export const ClientNavbar = ({ userName }: ClientNavbarProps) => {
               size="sm"
               className="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm"
             >
-              <span className="hidden sm:inline">Sign out</span>
-              <span className="sm:hidden">Out</span>
+              <span className="inline">Sign out</span>
             </Button>
           </div>
         </div>
