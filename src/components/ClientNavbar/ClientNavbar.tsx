@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { auth } from "@/lib/auth";
+import { Button } from "@/components/Button";
 import type { ClientNavbarProps } from "./ClientNavbar.types";
 
 export const ClientNavbar = ({ userName }: ClientNavbarProps) => {
@@ -40,21 +41,17 @@ export const ClientNavbar = ({ userName }: ClientNavbarProps) => {
                 </span>
               </>
             )}
-            <button
+            <Button
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              loading={isSigningOut}
+              variant="secondary"
+              size="sm"
+              className="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm"
             >
-              {isSigningOut ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-gray-600 mr-1 sm:mr-2"></div>
-                  <span className="hidden sm:inline">Signing out...</span>
-                  <span className="sm:hidden">...</span>
-                </div>
-              ) : (
-                "Sign out"
-              )}
-            </button>
+              <span className="hidden sm:inline">Sign out</span>
+              <span className="sm:hidden">Out</span>
+            </Button>
           </div>
         </div>
       </div>

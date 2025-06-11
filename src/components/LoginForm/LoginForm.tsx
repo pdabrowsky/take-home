@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { auth } from "@/lib/auth";
+import { Button } from "@/components/Button";
 import { loginSchema, signupSchema } from "@/lib/validations";
 import type {
   LoginFormData,
@@ -112,14 +113,16 @@ export const LoginForm = () => {
             {authMode === "login"
               ? "Don't have an account? "
               : "Already have an account? "}
-            <button
+            <Button
               type="button"
               onClick={handleToggleMode}
               disabled={loading}
-              className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="ghost"
+              size="sm"
+              className="font-medium text-indigo-600 hover:text-indigo-500 p-0 h-auto"
             >
               {authMode === "login" ? "Sign up" : "Sign in"}
-            </button>
+            </Button>
           </p>
         </div>
 
@@ -208,24 +211,15 @@ export const LoginForm = () => {
           </div>
 
           <div>
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+              loading={loading}
+              fullWidth
+              className="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
             >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {authMode === "login"
-                    ? "Signing in..."
-                    : "Creating account..."}
-                </div>
-              ) : authMode === "login" ? (
-                "Sign in"
-              ) : (
-                "Create account"
-              )}
-            </button>
+              {authMode === "login" ? "Sign in" : "Create account"}
+            </Button>
           </div>
         </form>
       </div>
