@@ -37,19 +37,3 @@ npm run dev
 ```
 
 4. Open http://localhost:3000
-
-## Environment Variables for Production
-
-For production deployment on Vercel, you can use either approach:
-
-**Option 1: Public variables only (simpler)**
-
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_KEY`
-
-**Option 2: Mixed approach (more secure)**
-
-- `NEXT_PUBLIC_SUPABASE_URL` (required for client)
-- `NEXT_PUBLIC_SUPABASE_KEY` (required for client)
-- `SUPABASE_URL` (server-side fallback)
-- `SUPABASE_KEY` (server-side fallback)
